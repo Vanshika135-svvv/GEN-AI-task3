@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MARKOV.OS // TASK-03</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="background-mesh"></div>
+    
+    <div class="glass-container">
+        <header>
+            <div class="brand">
+                <span class="logo-icon">∞</span>
+                <h1>MARKOV.<span>OS</span></h1>
+            </div>
+            <div class="status-indicator">
+                <span class="dot"></span> ENGINE_ACTIVE
+            </div>
+        </header>
+
+        <main>
+            <div class="bento-grid">
+                <div class="card input-card">
+                    <div class="card-header">
+                        <label for="user-input">SOURCE_CORPUS</label>
+                        <span class="hint">Paste text to train AI</span>
+                    </div>
+                    <textarea id="user-input" placeholder="Paste your training data here... (e.g., Cyberpunk lore, lyrics, or scripts)"></textarea>
+                    
+                    <div class="control-row">
+                        <div class="selector-wrapper">
+                            <select id="size-select" title="Output Depth">
+                                <option value="short">PUNCHY_SHORT</option>
+                                <option value="medium" selected>BALANCED_VIBE</option>
+                                <option value="long">EXTENDED_FLOW</option>
+                            </select>
+                        </div>
+                        <button id="gen-btn" onclick="processText()">MANIFEST ✨</button>
+                    </div>
+                </div>
+
+                <div class="card output-card">
+                    <div class="card-header">
+                        <label>SYNTHESIZED_OUTPUT</label>
+                        <div id="word-count" class="stat-badge">0 WORDS</div>
+                    </div>
+                    
+                    <div class="display-box">
+                        <div id="loader" class="hidden">
+                            <div class="pulse-ring"></div>
+                            <p>COMPUTING...</p>
+                        </div>
+                        <div id="output-text" class="content">Awaiting local training data...</div>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <span id="process-time">READY</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        async function processText() {
+            const corpus = document.getElementById('user-input').value;
+            const size = document.getElementById('size-select').value;
+            const btn = document.getElementById('gen-btn');
+            const output = document.getElementById('output-text');
+            const loader = document.getElementById('loader');
+            const timer = document.getElementById('process-time');
+            const wordCount = document.getElementById('word-count');
+            
+            if(!corpus || corpus.trim().length < 5) {
+                alert("I need more data to learn the pattern, bestie!");
+                return;
+            }
+
+            const startTime = Date.now();
+            btn.disabled = true;
+            loader.classList.remove('hidden');
+            output.classList.add('blur-text');
+            timer.innerText = "PROCESSING...";
+
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ corpus, size })
+                });
+
+                const data = await response.json();
+                const duration = ((Date.now() - startTime) / 1000).toFixed(3);
+
+                output.innerText = data.text;
+                timer.innerText = `ENGINE_TIME: ${duration}s`;
+                wordCount.innerText = `${data.text.split(' ').length} WORDS`;
+                
+            } catch (e) {
+                output.innerText = "ENGINE_CRASH: Data loop failed.";
+            } finally {
+                btn.disabled = false;
+                loader.classList.add('hidden');
+                output.classList.remove('blur-text');
+            }
+        }
+    </script>
+</body>
+</html>
