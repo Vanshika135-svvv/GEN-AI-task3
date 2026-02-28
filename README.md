@@ -39,7 +39,8 @@ Statistical engine utilizing Markov Chains to predict word-to-word transition pr
 * **Reference:** Task-03 (Prodigy InfoTech)
 * **Objective:** Implement a statistical model that predicts the probability of a word based on the previous ones.
 
----## **📂 File Structure**
+---
+## **📂 File Structure**
 ```                                 
 ├── app.py
 ├── templates/          
